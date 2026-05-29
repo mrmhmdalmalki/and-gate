@@ -1,0 +1,63 @@
+% ============================================================
+%  AND gate - transistor-level realization
+%      AND = NAND followed by a NOT gate
+%  Stage 1 (Q1,Q2 in series) = NAND -> gives NOT(A.B)
+%  Stage 2 (Q3)              = NOT   -> inverts back to (A.B)
+%  Compile:  pdflatex circuit.tex
+% ============================================================
+\documentclass[border=12pt]{standalone}
+\usepackage{circuitikz}
+\usepackage{amsmath}
+\usetikzlibrary{decorations.pathreplacing}
+
+\begin{document}
+\begin{circuitikz}[american, line width=0.7pt]
+
+  % ---------- Supply rail (+5 V) ----------
+  \draw (-2,6.5) -- (12,6.5);
+  \node[anchor=south] at (4,6.55) {\textbf{$V_{CC} = +5\,\mathrm{V}$}};
+
+  % ===================== STAGE 1 : NAND =====================
+  \node[npn] (q1) at (3,4) {};     % top    (input A)
+  \node[npn] (q2) at (3,1.3) {};   % bottom (input B)
+  \node[anchor=west] at ($(q1.E)+(0.45,0.15)$) {Q1};
+  \node[anchor=west] at ($(q2.E)+(0.45,0.15)$) {Q2};
+
+  % series link + ground + pull-up
+  \draw (q1.E) -- (q2.C);
+  \draw (q2.E) -- ++(0,-1.0) node[ground]{};
+  \draw (q1.C) to[R, l_={$R_{C1}=1\,\mathrm{k}\Omega$}] (3,6.5);
+  \fill (3,6.5) circle (1.6pt);
+
+  % inputs
+  \draw (-2,4) node[ocirc]{} node[left]{Input $A$}
+        to[R, l={$R_{B1}=10\,\mathrm{k}\Omega$}] (q1.B);
+  \draw (-2,1.3) node[ocirc]{} node[left]{Input $B$}
+        to[R, l={$R_{B2}=10\,\mathrm{k}\Omega$}] (q2.B);
+
+  % NAND node label
+  \node[anchor=south] at (5.5,4.6) {$\overline{A\cdot B}$};
+
+  % ===================== STAGE 2 : NOT =====================
+  \node[npn] (q3) at (9,2.5) {};
+  \node[anchor=west] at ($(q3.E)+(0.45,0.15)$) {Q3};
+
+  % interstage: NAND output (Q1 collector) -> base of Q3
+  \draw (q1.C) -- (5.5,4.5) -- (5.5,2.5) to[R, l={$R_{B3}=10\,\mathrm{k}\Omega$}] (q3.B);
+
+  % Q3 ground + pull-up
+  \draw (q3.E) -- ++(0,-1.1) node[ground]{};
+  \draw (q3.C) to[R, l_={$R_{C3}=1\,\mathrm{k}\Omega$}] (9,6.5);
+  \fill (9,6.5) circle (1.6pt);
+
+  % output
+  \draw (q3.C) -- ++(2.2,0) node[ocirc]{} node[right]{Output $Y=A\cdot B$};
+
+  % ---------- stage brackets ----------
+  \draw[decorate, decoration={brace, amplitude=5pt}, line width=0.5pt]
+        (-2.1,-1.3) -- (5.0,-1.3) node[midway, below=6pt]{\small Stage 1: NAND};
+  \draw[decorate, decoration={brace, amplitude=5pt}, line width=0.5pt]
+        (6.2,-1.3) -- (11.4,-1.3) node[midway, below=6pt]{\small Stage 2: NOT};
+
+\end{circuitikz}
+\end{document}
