@@ -17,8 +17,17 @@
   \node[red,font=\bfseries\footnotesize,anchor=north west] at ($(#1.E)+(0.05,-0.05)$){E};
 }
 
+% ground symbol (pic): same stroke as everything, just extra gap between bars
+\tikzset{gnd/.pic={
+  \draw
+    (0,0) -- (0,-0.18)
+    (-0.34,-0.18) -- (0.34,-0.18)
+    (-0.21,-0.37) -- (0.21,-0.37)
+    (-0.08,-0.56) -- (0.08,-0.56);
+}}
 \begin{document}
-\begin{circuitikz}[american, line width=0.7pt]
+\begin{circuitikz}[american, line width=0.8pt]
+  \ctikzset{tripoles/thickness=1, bipoles/thickness=1, logic ports/thickness=1}
 
   % ---------- Supply rail (+5 V) ----------
   \draw (-2,6.5) -- (12,6.5);
@@ -33,7 +42,7 @@
 
   % series link + ground + pull-up
   \draw (q1.E) -- (q2.C);
-  \draw (q2.E) -- ++(0,-1.0) node[ground]{};
+  \draw (q2.E) -- ++(0,-1.0) pic{gnd};
   \draw (q1.C) to[R, l_={$R_{C1}=1\,\mathrm{k}\Omega$}] (3,6.5);
   \fill (3,6.5) circle (1.6pt);
 
@@ -52,10 +61,10 @@
   \pinlabels{q3}
 
   % interstage: NAND output (Q1 collector) -> base of Q3
-  \draw (q1.C) -- (5.5,4.5) -- (5.5,2.5) to[R, l={$R_{B3}=10\,\mathrm{k}\Omega$}] (q3.B);
+  \draw (q1.C) -- (5.5,4.5) -- (5.5,2.5) to[R, l_={$R_{B3}=10\,\mathrm{k}\Omega$}] (q3.B);
 
   % Q3 ground + pull-up
-  \draw (q3.E) -- ++(0,-1.1) node[ground]{};
+  \draw (q3.E) -- ++(0,-1.1) pic{gnd};
   \draw (q3.C) to[R, l_={$R_{C3}=1\,\mathrm{k}\Omega$}] (9,6.5);
   \fill (9,6.5) circle (1.6pt);
 
@@ -63,9 +72,9 @@
   \draw (q3.C) -- ++(2.2,0) node[ocirc]{} node[right]{Output $Y=A\cdot B$};
 
   % ---------- stage brackets ----------
-  \draw[decorate, decoration={brace, amplitude=5pt}, line width=0.5pt]
+  \draw[decorate, decoration={brace, amplitude=5pt}, line width=0.8pt]
         (-2.1,-1.3) -- (5.0,-1.3) node[midway, below=6pt]{\small Stage 1: NAND};
-  \draw[decorate, decoration={brace, amplitude=5pt}, line width=0.5pt]
+  \draw[decorate, decoration={brace, amplitude=5pt}, line width=0.8pt]
         (6.2,-1.3) -- (11.4,-1.3) node[midway, below=6pt]{\small Stage 2: NOT};
 
 \end{circuitikz}

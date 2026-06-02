@@ -4,7 +4,7 @@ An AND gate outputs `1` **only when both inputs are `1`** (`Y = A · B`).
 
 ### Symbol
 
-<img src="images/symbol.png" width="400">
+<img src="images/symbol.png" width="460">
 
 ### Truth table
 
@@ -54,11 +54,11 @@ So `Y = A · B`.
 
 A NAND stage (Q1, Q2 in series) followed by a NOT stage (Q3). Identify each 2N3904's legs with the pinout (flat face toward you, legs down, **E B C** left to right), then wire as in the pin-labeled schematic above.
 
-<img src="images/pinout.png" width="300">
+<img src="images/pinout.png" width="360">
 
 The wiring picture below is the same circuit drawn the way the parts physically sit on the board (each TO-92 package with its legs pointing down), so each leg maps straight to where its wire goes:
 
-<img src="images/wiring.png" width="720">
+<img src="images/wiring.png" width="900">
 
 Connect each 2N3904 as follows:
 

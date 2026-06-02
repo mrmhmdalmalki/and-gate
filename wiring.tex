@@ -24,15 +24,23 @@
     \node[red,font=\bfseries\small,right=1pt] at ( 0.6,3.85) {C};
   \end{scope}}
 
+% ground symbol (pic): same stroke as everything, just extra gap between bars
+\tikzset{gnd/.pic={
+  \draw
+    (0,0) -- (0,-0.18)
+    (-0.34,-0.18) -- (0.34,-0.18)
+    (-0.21,-0.37) -- (0.21,-0.37)
+    (-0.08,-0.56) -- (0.08,-0.56);
+}}
 \begin{document}
-\begin{tikzpicture}[line width=1pt, font=\sffamily]
+\begin{tikzpicture}[line width=0.8pt, font=\sffamily]
   \ctikzset{tripoles/thickness=1, bipoles/thickness=1}
 
   % ---------- power rails ----------
   \draw (-2,6.4) -- (14.6,6.4);
   \node[anchor=west] at (5.6,6.65) {$+5\,\mathrm{V}$ (Vcc)};
   \draw (-2,0) -- (14.6,0);
-  \draw (-1.4,0) -- (-1.4,-0.05) node[ground, scale=1.4]{};
+  \draw (-1.4,0) -- (-1.4,-0.05) pic{gnd};
   \node[anchor=west] at (-1.1,-0.45) {GND (0 V)};
 
   % ---------- transistors (Q2 left, Q1 middle, Q3 right) ----------
@@ -44,7 +52,7 @@
   % Q2 emitter -> GND
   \draw (0.9,3.5) -- (0.9,0);  \fill (0.9,0) circle (1.6pt);
   % Q2 base -> R_B2 -> Input B
-  \draw (1.5,3.5) -- (1.5,2.9) to[R, l_={$R_{B2}=10\,\mathrm{k}\Omega$}] (1.5,1.1)
+  \draw (1.5,3.5) -- (1.5,2.9) to[R, l={$R_{B2}=10\,\mathrm{k}\Omega$}] (1.5,1.1)
         -- (1.5,0.6) node[ocirc]{} node[right]{\,Input $B$};
   % series link: Q2 collector -> Q1 emitter
   \draw (2.1,3.5) -- (2.1,2.5) -- (5.9,2.5) -- (5.9,3.5);
@@ -60,8 +68,8 @@
   \fill (8.0,6.4) circle (1.6pt);
 
   % ===== interstage: NAND node (A-bar.B) -> R_B3 -> Q3 base =====
-  \draw (8.0,3.0) -- (8.0,2.0) -- (8.7,2.0)
-        to[R, l_={$R_{B3}=10\,\mathrm{k}\Omega$}] (10.2,2.0) -- (11.5,2.0) -- (11.5,3.5);
+  \draw (8.0,3.0) -- (8.0,2.0) -- (8.2,2.0)
+        to[R, l_={$R_{B3}=10\,\mathrm{k}\Omega$}] (9.7,2.0) -- (11.5,2.0) -- (11.5,3.5);
   \node[anchor=west,font=\footnotesize] at (8.15,2.5) {$\overline{A\cdot B}$};
 
   % ===== Stage 2 : NOT (Q3) =====
