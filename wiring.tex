@@ -1,0 +1,195 @@
+% ============================================================
+%  AND gate - compact single-breadboard wiring diagram.
+%  The NAND stage AND the NOT stage on ONE half-size 400-point
+%  breadboard (30 columns), 6 transistors, LEDs on the external
+%  inputs and output only.  The internal node w = NAND(A,B) is a
+%  plain jumper run.
+%      NAND stage: Q2,Q1 = 2N3904 (NPN, series pull-down)
+%                  Q3,Q4 = 2N3906 (PNP, parallel pull-up)  -> w
+%      NOT stage:  Q5 = 2N3904, Q6 = 2N3906               -> Y
+%  Rail use:  top rail pair = +5 V (outer) and GND (inner) for
+%  the transistor emitters; bottom rail = GND for the LED
+%  returns.  The two GND rails are ONE node - bridge them.
+%  TO-92 legs sit in ADJACENT holes (E B C, left to right).
+%  Compile:  pdflatex wiring.tex
+% ============================================================
+\documentclass[border=16pt]{standalone}
+\usepackage{circuitikz}
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning}
+
+\definecolor{vcc}{RGB}{205,45,45}      % +5 V wires (red)
+\definecolor{gnd}{RGB}{35,35,40}       % GND wires (near-black)
+\definecolor{anet}{RGB}{20,140,60}     % input A (green)
+\definecolor{bnet}{RGB}{225,120,0}     % input B (orange)
+\definecolor{mnet}{RGB}{120,90,60}     % internal nodes m, w (brown)
+\definecolor{onet}{RGB}{120,45,175}    % output (violet)
+\definecolor{board}{RGB}{246,241,229}  % breadboard body
+
+% one TO-92 transistor, legs in ADJACENT holes (dense build).
+% #1 = column of the E leg, #2 = reference tag, #3 = part number
+\newcommand{\transd}[3]{%
+  \pgfmathsetmacro\xe{0.7*#1}%
+  \pgfmathsetmacro\xb{0.7*(#1+1)}%
+  \pgfmathsetmacro\xc{0.7*(#1+2)}%
+  \draw[fill=black!10]
+        (\xe-0.34,9.55) -- (\xe-0.34,9.9)
+        arc (180:0:{(\xc-\xe+0.68)/2} and 0.42) -- (\xc+0.34,9.55) -- cycle;
+  \node[font=\tiny\bfseries] at (\xb,10.04) {#2};
+  \node[font=\tiny] at (\xb,9.76) {#3};
+  \draw (\xe,9.55)--(\xe,9.0);
+  \draw (\xb,9.55)--(\xb,9.0);
+  \draw (\xc,9.55)--(\xc,9.0);
+  \node[red,font=\tiny\bfseries,anchor=north] at (\xe,8.95) {E};
+  \node[red,font=\tiny\bfseries,anchor=north] at (\xb,8.95) {B};
+  \node[red,font=\tiny\bfseries,anchor=north] at (\xc,8.95) {C};
+}
+
+\begin{document}
+\begin{tikzpicture}[line width=1.1pt, font=\sffamily]
+  \ctikzset{bipoles/thickness=1, bipoles/length=0.85cm, resistors/scale=0.85}
+
+  % ---------- board body ----------
+  \fill[board,rounded corners=7pt] (0.1,-0.5) rectangle (21.6,11.5);
+
+  % ---------- hole grid (two banks of 5 rows) ----------
+  \foreach \c in {1,...,30}{
+    \foreach \y in {9.0,8.4,7.8,7.2,6.6, 5.4,4.8,4.2,3.6,3.0}{
+      \fill[black!16] ({0.7*\c},\y) circle (0.45mm);
+    }
+  }
+  % centre gap (ravine)
+  \fill[black!5] (0.3,5.85) rectangle (21.4,6.15);
+
+  % ---------- power rails: top pair (+5 V outer, GND inner), bottom GND ----------
+  \foreach \c in {1,...,30}{
+    \fill[red!28]  ({0.7*\c},11.15) circle (0.45mm);
+    \fill[blue!28] ({0.7*\c},10.6)  circle (0.45mm);
+    \fill[blue!28] ({0.7*\c},0.0)   circle (0.45mm);
+  }
+  \draw[vcc]    (0.3,11.15) -- (21.4,11.15);
+  \draw[gnd!80] (0.3,10.6)  -- (21.4,10.6);
+  \draw[gnd!80] (0.3,0.0)   -- (21.4,0.0);
+  \node[vcc,font=\footnotesize\bfseries,anchor=west] at (21.7,11.15) {$+5\,$V rail};
+  \node[gnd,font=\footnotesize\bfseries,anchor=west] at (21.7,10.6)  {GND rail};
+  \node[gnd,font=\footnotesize\bfseries,anchor=west] at (21.7,0.0)   {GND rail};
+
+  % ---------- transistors (legs E B C in adjacent holes) ----------
+  \transd{4}{Q2}{2N3904}
+  \transd{8}{Q1}{2N3904}
+  \transd{13}{Q3}{2N3906}
+  \transd{17}{Q4}{2N3906}
+  \transd{21}{Q5}{2N3904}
+  \transd{25}{Q6}{2N3906}
+
+  % =========================================================
+  %  emitters:  NPN -> top GND rail,  PNP -> +5 V rail
+  %  (Q2, Q5 jog one column left, then straight up; Q1's emitter
+  %   goes to node m instead - it sits on top of Q2)
+  % =========================================================
+  \draw[gnd] ({0.7*4},9.0)  -- ({0.7*3},9.0)  -- ({0.7*3},10.6);
+  \draw[vcc] ({0.7*13},9.0) -- ({0.7*12},9.0) -- ({0.7*12},11.15);
+  \draw[vcc] ({0.7*17},9.0) -- ({0.7*16},9.0) -- ({0.7*16},11.15);
+  \draw[gnd] ({0.7*21},9.0) -- ({0.7*20},9.0) -- ({0.7*20},10.6);
+  \draw[vcc] ({0.7*25},9.0) -- ({0.7*24},9.0) -- ({0.7*24},11.15);
+
+  % =========================================================
+  %  series link m:  Q2.C (col6) <-> Q1.E (col8), at y=5.6
+  % =========================================================
+  \draw[mnet] ({0.7*6},9.0) -- ({0.7*6},5.6);
+  \draw[mnet] ({0.7*8},9.0) -- ({0.7*8},5.6);
+  \draw[mnet] ({0.7*6},5.6) -- ({0.7*8},5.6);
+  \fill[mnet] ({0.7*6},5.6) circle (1.5pt);
+  \fill[mnet] ({0.7*8},5.6) circle (1.5pt);
+  \node[mnet,font=\scriptsize,anchor=south] at ({0.7*7},5.65) {$m$};
+
+  % =========================================================
+  %  INPUT A net (green), lane at y=4.6:
+  %  terminal -> R_A2 (Q1.B, col9) -> R_A1 (Q3.B, col14); LED on col1
+  % =========================================================
+  \draw[anet] (-0.8,4.6) -- ({0.7*14},4.6);
+  \node[anet,anchor=east,font=\bfseries] at (-0.9,4.6) {Input $A$};
+  \fill[anet] (-0.8,4.6) circle (1.5pt);
+  \draw ({0.7*9},9.0) -- ({0.7*9},7.8);
+  \draw ({0.7*9},7.8) to[R, l_=\scriptsize $R_{A2}$, -*] ({0.7*9},4.6);
+  \draw ({0.7*14},9.0) -- ({0.7*14},7.8);
+  \draw ({0.7*14},7.8) to[R, l_=\scriptsize $R_{A1}$, -*] ({0.7*14},4.6);
+  % input indicator LED on col 1 (plain wire first, then R + LED lower,
+  %  so the labels sit clear of the B lane it crosses)
+  \fill[anet] ({0.7*1},4.6) circle (1.5pt);
+  \draw ({0.7*1},4.6) -- ({0.7*1},3.4);
+  \draw ({0.7*1},3.4) to[R, l_=\scriptsize $R_{inA}$] ({0.7*1},2.2);
+  \draw ({0.7*1},2.2) to[leD, l_=\scriptsize LED$_A$] ({0.7*1},1.0);
+  \draw[gnd] ({0.7*1},1.0) -- ({0.7*1},0.0);
+
+  % =========================================================
+  %  INPUT B net (orange), lane at y=4.0:
+  %  terminal -> R_B2 (Q2.B, col5) -> R_B1 (Q4.B, col18); LED on col2
+  % =========================================================
+  \draw[bnet] (-0.8,4.0) -- ({0.7*18},4.0);
+  \node[bnet,anchor=east,font=\bfseries] at (-0.9,4.0) {Input $B$};
+  \fill[bnet] (-0.8,4.0) circle (1.5pt);
+  \draw ({0.7*5},9.0) -- ({0.7*5},7.8);
+  \draw ({0.7*5},7.8) to[R, l_=\scriptsize $R_{B2}$, -*] ({0.7*5},4.0);
+  \draw ({0.7*18},9.0) -- ({0.7*18},7.8);
+  \draw ({0.7*18},7.8) to[R, l_=\scriptsize $R_{B1}$, -*] ({0.7*18},4.0);
+  % input indicator LED on col 2 (staggered heights vs the A branch)
+  \fill[bnet] ({0.7*2},4.0) circle (1.5pt);
+  \draw ({0.7*2},4.0) -- ({0.7*2},2.9);
+  \draw ({0.7*2},2.9) to[R, l=\scriptsize $R_{inB}$] ({0.7*2},1.7);
+  \draw ({0.7*2},1.7) to[leD, l=\scriptsize LED$_B$] ({0.7*2},0.7);
+  \draw[gnd] ({0.7*2},0.7) -- ({0.7*2},0.0);
+
+  % =========================================================
+  %  internal node w = NAND(A,B) (brown), lane at y=5.6:
+  %  Q1.C (col10) + Q3.C (col15) + Q4.C (col19)
+  %      -> R_w1 (Q5.B, col22) + R_w2 (Q6.B, col26)
+  % =========================================================
+  \draw[mnet] ({0.7*10},9.0) -- ({0.7*10},5.6);
+  \draw[mnet] ({0.7*15},9.0) -- ({0.7*15},5.6);
+  \draw[mnet] ({0.7*19},9.0) -- ({0.7*19},5.6);
+  \draw[mnet] ({0.7*10},5.6) -- ({0.7*26},5.6);
+  \fill[mnet] ({0.7*10},5.6) circle (1.5pt);
+  \fill[mnet] ({0.7*15},5.6) circle (1.5pt);
+  \fill[mnet] ({0.7*19},5.6) circle (1.5pt);
+  \node[mnet,font=\footnotesize,anchor=south] at ({0.7*11.9},5.65) {$w=\overline{A\cdot B}$};
+  \draw ({0.7*22},9.0) -- ({0.7*22},7.8);
+  \draw ({0.7*22},7.8) to[R, l_=\scriptsize $R_{w1}$, -*] ({0.7*22},5.6);
+  \draw ({0.7*26},9.0) -- ({0.7*26},7.8);
+  \draw ({0.7*26},7.8) to[R, l_=\scriptsize $R_{w2}$, -*] ({0.7*26},5.6);
+
+  % =========================================================
+  %  OUTPUT net (violet), lane at y=5.2:
+  %  Q5.C (col23) + Q6.C (col27) -> LED (col29) -> terminal
+  % =========================================================
+  \draw[onet] ({0.7*23},9.0) -- ({0.7*23},5.2);
+  \draw[onet] ({0.7*27},9.0) -- ({0.7*27},5.2);
+  \draw[onet] ({0.7*23},5.2) -- (22.3,5.2);
+  \fill[onet] ({0.7*23},5.2) circle (1.5pt);
+  \fill[onet] ({0.7*27},5.2) circle (1.5pt);
+  \node[onet,anchor=west,font=\bfseries] at (22.4,5.2) {Output $Y=A\cdot B$};
+  \fill[onet] (22.3,5.2) circle (1.5pt);
+  % output indicator LED on col 29
+  \draw ({0.7*29},5.2) to[R, l=\scriptsize $R_{out}$, *-] ({0.7*29},3.8);
+  \draw ({0.7*29},3.8) to[leD, l=\scriptsize LED$_{\mathrm{out}}$] ({0.7*29},2.6);
+  \draw[gnd] ({0.7*29},2.6) -- ({0.7*29},0.0);
+
+  % =========================================================
+  %  legend
+  % =========================================================
+  \begin{scope}[shift={(0.3,-1.5)}]
+    \node[anchor=west,font=\footnotesize\bfseries] at (-0.2,0.55) {Jumper wires:};
+    \draw[vcc]  (2.6,0.55)--(3.3,0.55);  \node[anchor=west,font=\footnotesize] at (3.35,0.55){+5\,V};
+    \draw[gnd]  (4.9,0.55)--(5.6,0.55);  \node[anchor=west,font=\footnotesize] at (5.65,0.55){GND};
+    \draw[anet] (7.2,0.55)--(7.9,0.55);  \node[anchor=west,font=\footnotesize] at (7.95,0.55){$A$};
+    \draw[bnet] (9.1,0.55)--(9.8,0.55);  \node[anchor=west,font=\footnotesize] at (9.85,0.55){$B$};
+    \draw[mnet] (11.0,0.55)--(11.7,0.55);\node[anchor=west,font=\footnotesize] at (11.75,0.55){$m$, $w$ (internal)};
+    \draw[onet] (15.6,0.55)--(16.3,0.55);\node[anchor=west,font=\footnotesize] at (16.35,0.55){output $Y$};
+    \node[anchor=west,font=\footnotesize\itshape] at (-0.2,-0.05)
+        {Each column of five holes in a bank is one node; transistor legs are E\,B\,C in \textbf{adjacent} holes.};
+    \node[anchor=west,font=\footnotesize\itshape] at (-0.2,-0.6)
+        {The two GND rails are \textbf{one node} -- bridge them with a jumper at the board edge.};
+  \end{scope}
+
+\end{tikzpicture}
+\end{document}

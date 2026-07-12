@@ -1,11 +1,11 @@
 % ============================================================
-%  AND gate - board-level wiring diagram.
-%  AND has no parts of its own: it is a finished NAND board whose
-%  output feeds a finished NOT board:
+%  AND gate - board-level wiring diagram (ALTERNATIVE build from
+%  a finished NAND board + a finished NOT board; the compact
+%  single-breadboard build is in wiring.tex):
 %        A,B -> [NAND] -> (A.B)-bar -> [NOT] -> Y = A.B
 %  Build the NAND board and the NOT board, share one +5 V rail and
 %  one GND, then wire them as below.
-%  Compile:  pdflatex wiring.tex
+%  Compile:  pdflatex boards.tex
 % ============================================================
 \documentclass[border=16pt]{standalone}
 \usepackage{circuitikz}
